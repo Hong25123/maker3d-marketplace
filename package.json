@@ -2,6 +2,7 @@
   "name": "maker3d",
   "private": true,
   "version": "1.0.0",
+  "description": "3D Print Marketplace v2",
   "type": "module",
   "scripts": {
     "dev": "vite",
