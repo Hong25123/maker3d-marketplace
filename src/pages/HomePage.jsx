@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+Award } from 'lucide-react'
+  Award, Palette } from 'lucide-react'import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Heart, ChevronRight, TrendingUp, Sparkles, Flame, Award } from 'lucide-react'
 import Card from '@/components/ui/Card.jsx'
