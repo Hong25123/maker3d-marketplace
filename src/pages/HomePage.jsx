@@ -1,10 +1,12 @@
-Award } from 'lucide-react'
-  Award, Palette } from 'lucide-react'import { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Heart, ChevronRight, TrendingUp, Sparkles, Flame, Award } from 'lucide-react'
+import { Search, Heart, ChevronRight, TrendingUp, Sparkles, Flame, Award, Palette } from 'lucide-react'
 import Card from '@/components/ui/Card.jsx'
 import { Button } from '@/components/ui/Button.jsx'
 import { cn } from '@/lib/utils'
+import { useToast } from '@/contexts/ToastContext.jsx'
+import { useAuth } from '@/contexts/AuthContext.jsx'
+
 import { useToast } from '@/contexts/ToastContext.jsx'
 import { useAuth } from '@/contexts/AuthContext.jsx'
 
