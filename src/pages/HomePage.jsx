@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils'
 import { useToast } from '@/contexts/ToastContext.jsx'
 import { useAuth } from '@/contexts/AuthContext.jsx'
 
-
 const categories = [
   { key: 'all', label: '全部', icon: '🌐' },
   { key: 'home', label: '家居', icon: '🏠' },
@@ -20,10 +19,8 @@ const categories = [
   { key: 'jewelry', label: '首饰', icon: '💎' },
 ]
 
-
 const IMG = (seed, w = 400, h = 400) =>
   `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(seed)}&image_size=square`
-
 
 const mockProducts = [
   {
@@ -84,7 +81,6 @@ const mockProducts = [
   },
 ]
 
-
 const banners = [
   {
     id: 1,
@@ -104,7 +100,6 @@ const banners = [
   },
 ]
 
-
 function paletteIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
@@ -115,19 +110,16 @@ function paletteIcon() {
 }
 // Patch: use inline SVG to avoid dynamic import issue — not used, imported directly.
 
-
 export default function HomePage({ onLoginNeeded }) {
   const [activeCategory, setActiveCategory] = useState('all')
   const [likedMap, setLikedMap] = useState({})
   const { user } = useAuth()
   const { showToast } = useToast()
 
-
   const filtered = useMemo(() => {
     if (activeCategory === 'all') return mockProducts
     return mockProducts.filter(p => p.category === activeCategory)
   }, [activeCategory])
-
 
   const toggleLike = (e, id) => {
     e.preventDefault()
@@ -136,6 +128,121 @@ export default function HomePage({ onLoginNeeded }) {
     setLikedMap(prev => {
       const next = !prev[id]
       showToast(next ? '已加入收藏 ❤️' : '已取消收藏', next ? 'success' : 'info')
+      return { ...prev, [id]: next }
+    })
+  }
+
+  const formatNum = n => n >= 10000 ? (n / 10000).toFixed(1) + 'w' : n.toLocaleString()
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 space-y-6">
+      {/* Hero Banners */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {banners.map(b => (
+          <Link
+            key={b.id}
+            to={b.link}
+            className={cn(
+              'relative overflow-hidden rounded-[20px] p-5 md:p-7 text-white bg-gradient-to-br',
+              b.gradient,
+              'shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 group'
+            )}
+          >
+            <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-white/10 backdrop-blur-xl" />
+            <div className="absolute right-5 top-5 h-10 w-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md group-hover:bg-white group-hover:text-primary transition">
+              {b.icon}
+            </div>
+            <h3 className="text-lg md:text-xl font-bold mb-1">{b.title}</h3>
+            <p className="text-sm text-white/85 mb-4">{b.desc}</p>
+            <span className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-white/20 text-sm font-medium backdrop-blur-md group-hover:bg-white group-hover:text-primary transition">
+              立即体验 <ChevronRight size={16} />
+            </span>
+          </Link>
+        ))}
+      </section>
+
+      {/* 搜索框（大） */}
+      <section>
+        <div className="relative">
+          <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary" />
+          <Link
+            to="/explore"
+            className="block w-full h-14 rounded-[20px] bg-white shadow-card hover:shadow-card-hover transition border border-transparent hover:border-primary/20"
+          >
+            <div className="h-full pl-14 pr-5 flex items-center text-secondary text-sm">
+              搜索模型、设计师或关键词
+              <span className="ml-auto px-3 py-1.5 rounded-full bg-muted text-xs font-medium hidden sm:block">
+                ⌘K
+              </span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      {/* 分类标签 —— 横向滚动 */}
+      <section>
+        <div className="hide-scrollbar-x -mx-4 md:mx-0 px-4 md:px-0">
+          <div className="flex gap-2.5 md:gap-3 pb-1">
+            {categories.map(cat => (
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+                className={cn(
+                  'shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200',
+                  activeCategory === cat.key
+                    ? 'bg-primary text-white shadow-sm shadow-primary/30 scale-[1.02]'
+                    : 'bg-white text-foreground hover:bg-accent shadow-card'
+                )}
+              >
+                <span className="text-base">{cat.icon}</span>
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 精选板块 */}
+      <section>
+        <div className="flex items-end justify-between mb-4 px-1">
+          <div>
+            <h2 className="text-xl md:text-2xl font-extrabold flex items-center gap-2">
+              <TrendingUp size={22} className="text-primary" />
+              本周精选
+            </h2>
+            <p className="text-sm text-secondary mt-0.5">设计师推荐的热门3D打印好物</p>
+          </div>
+          <Link to="/explore" className="text-sm text-primary font-medium flex items-center gap-0.5 hover:gap-1 transition-all">
+            查看更多 <ChevronRight size={16} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+          {filtered.map(p => (
+            <Link
+              key={p.id}
+              to={`/product/${p.id}`}
+              className="group"
+            >
+              <Card className="overflow-hidden h-full flex flex-col">
+                {/* 图片区 */}
+                <div className="relative aspect-square overflow-hidden bg-muted">
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    onError={(e) => { e.currentTarget.style.display = 'none' }}
+                  />
+                  {/* 徽章 */}
+                  <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1">
+                    {p.tags.includes('热卖') && <span className="px-2 py-0.5 rounded-full bg-[#FF3B30] text-white text-[10px] font-bold flex items-center gap-0.5"><Flame size={10} fill="currentColor" />热卖</span>}
+                    {p.tags.includes('新品') && <span className="px-2 py-0.5 rounded-full bg-[#34C759] text-white text-[10px] font-bold">新品</span>}
+                    {p.tags.includes('折扣') && <span className="px-2 py-0.5 rounded-full bg-[#FF9500] text-white text-[10px] font-bold flex items-center gap-0.5"><Award size={10} fill="currentColor" />折扣</span>}
+                    {p.tags.includes('精选') && <span className="px-2 py-0.5 rounded-full bg-[#2B7BD6] text-white text-[10px] font-bold">精选</span>}
+                    {p.tags.includes('限量') && <span className="px-2 py-0.5 rounded-full bg-[#AF52DE] text-white text-[10px] font-bold">限量</span>}
+                  </div>
+                  {/* 点赞按钮 */}
                   <button
                     onClick={(e) => toggleLike(e, p.id)}
                     className="absolute top-2.5 right-2.5 h-8 w-8 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-[#FF3B30] active:scale-90 transition-all duration-200"
@@ -153,19 +260,16 @@ export default function HomePage({ onLoginNeeded }) {
                   </div>
                 </div>
 
-
                 {/* 信息区 */}
                 <div className="p-3 md:p-4 flex-1 flex flex-col">
                   <h3 className="text-sm font-semibold leading-snug line-clamp-2 mb-2.5 group-hover:text-primary transition-colors">
                     {p.name}
                   </h3>
 
-
                   <div className="flex items-center gap-2 mb-3 mt-auto">
                     <img src={p.avatar} alt="avatar" className="h-5 w-5 rounded-full bg-muted" />
                     <span className="text-xs text-secondary truncate">{p.designer}</span>
                   </div>
-
 
                   <div className="flex items-end justify-between">
                     <div className="flex items-baseline gap-1.5">
@@ -185,12 +289,10 @@ export default function HomePage({ onLoginNeeded }) {
           ))}
         </div>
 
-
         {filtered.length === 0 && (
           <div className="py-20 text-center text-secondary text-sm">该分类暂无商品，敬请期待</div>
         )}
       </section>
-
 
       {/* CTA 发布按钮 */}
       <section className="pt-2">
@@ -214,4 +316,4 @@ export default function HomePage({ onLoginNeeded }) {
       </section>
     </div>
   )
-    }
+}
